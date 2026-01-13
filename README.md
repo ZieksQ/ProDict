@@ -5,7 +5,7 @@ A personal, dictionary built with ASP.NET Core Minimal APIs to store programming
 This Project was built to solve the problem "I forgot the term for this" a problem while practicing and learning software development.
 
 > [!Note]
-> This Project is built for personal use because I often forget some programming terminologies when learning. if you want to add or change something to the application you can fork my repo, I have set the MIT [[LICENSE]].
+> This Project is built for personal use because I often forget some programming terminologies when learning. if you want to add or change something to the application you can fork my repo.
 
 ## 🚀 Tech Stack
 
@@ -59,4 +59,4 @@ dotnet run
 
 ---
 
-[[LICENSE]]
+MIT [LICENSE](LICENSE)
