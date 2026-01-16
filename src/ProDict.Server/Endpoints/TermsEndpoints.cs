@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using ProDict.Server.Data;
 using ProDict.Server.Dtos;
@@ -67,6 +68,16 @@ public static class TermsEndpoints
         // CREATE New Terms
         group.MapPost("/", async (CreateTermsDto dto, AppDbContext db) =>
         {
+            var groupExist = await db.Groups.AnyAsync(g => g.Id == dto.GroupId);
+
+            if (!groupExist) return Results.NotFound(
+                new
+                {
+                    error = "GroupNotFound",
+                    message = $"Group with ID {dto.GroupId} does not exist.",
+                    ok = false
+                }
+            );
             Term term = new()
             {
                 Name = dto.Name,
@@ -95,6 +106,17 @@ public static class TermsEndpoints
         // UPDATE Terms
         group.MapPut("/{id}", async (int id, CreateTermsDto dto, AppDbContext db) =>
         {
+            var groupExist = await db.Groups.AnyAsync(g => g.Id == dto.GroupId);
+
+            if (!groupExist) return Results.NotFound(
+                new
+                {
+                    error = "GroupNotFound",
+                    message = $"Group with ID {dto.GroupId} does not exist.",
+                    ok = false
+                }
+            );
+
             var term = await db.Terms.FindAsync(id);
 
             if (term is null) return Results.NotFound();
@@ -105,13 +127,34 @@ public static class TermsEndpoints
             term.ReferenceLinks = dto.ReferenceLinks;
 
             await db.SaveChangesAsync();
-            return Results.NoContent();
+            var savedTerms = await db.Terms
+                               .Include(t => t.Group)
+                               .AsNoTracking()
+                               .FirstOrDefaultAsync(g => g.GroupId == term.GroupId);
+            TermsDetailsDto newDto = new(
+                savedTerms!.Id,
+                savedTerms.Name,
+                savedTerms.Group!.Name,
+                savedTerms.Description,
+                savedTerms.ReferenceLinks
+            );
+            return Results.Ok(newDto);
         });
 
         // DELETE Endpoints
         // DELETE Terms
         group.MapDelete("/{id}", async (int id, AppDbContext db) =>
         {
+            var termExists = await db.Terms.AnyAsync(t => t.Id == id);
+            if (!termExists) return Results.NotFound(
+                new
+                {
+                    error = "TermsNotFound",
+                    message = "Terms does not exist.",
+                    ok = false
+                }
+            );
+
             await db.Terms
                     .Where(t => t.Id == id)
                     .ExecuteDeleteAsync();

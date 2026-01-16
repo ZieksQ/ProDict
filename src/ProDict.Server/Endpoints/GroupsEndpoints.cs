@@ -64,5 +64,14 @@ public static class GroupsEndpoints
             await db.SaveChangesAsync();
             return Results.Ok(group);
         });
+
+        groupApp.MapDelete("/{id}", async (int id, AppDbContext db) =>
+        {
+            var group = await db.Groups.FindAsync(id);
+            if (group is null) return Results.NotFound();
+            db.Groups.Remove(group);
+            await db.SaveChangesAsync();
+            return Results.Ok();
+        });
     }
 }
