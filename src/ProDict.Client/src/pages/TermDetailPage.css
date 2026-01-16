@@ -1,0 +1,112 @@
+.term-detail-page {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.term-detail-page__back {
+  background: transparent;
+  border: 1px solid var(--border-color, #444);
+  margin-bottom: 2rem;
+}
+
+.term-detail-page__back:hover {
+  background-color: var(--card-bg, #2a2a2a);
+}
+
+.term-detail-page__status {
+  text-align: center;
+  color: var(--text-muted, #888);
+  padding: 2rem;
+}
+
+.term-detail-page__status--error {
+  color: #ef4444;
+}
+
+.term-detail {
+  background-color: var(--card-bg, #2a2a2a);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.term-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color, #444);
+}
+
+.term-detail__name {
+  margin: 0;
+  font-size: 2rem;
+  background: linear-gradient(135deg, #646cff, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.term-detail__group {
+  font-size: 0.9rem;
+  color: var(--text-muted, #888);
+  background-color: var(--badge-bg, #3a3a3a);
+  padding: 0.5rem 1rem;
+  border-radius: 16px;
+}
+
+.term-detail__section {
+  margin-bottom: 1.5rem;
+}
+
+.term-detail__section h2 {
+  font-size: 1rem;
+  color: var(--text-muted, #888);
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.term-detail__description {
+  margin: 0;
+  line-height: 1.7;
+  font-size: 1.1rem;
+}
+
+.term-detail__link {
+  word-break: break-all;
+}
+
+.term-detail__actions {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #444);
+}
+
+.term-detail__delete-btn {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+}
+
+.term-detail__delete-btn:hover {
+  background-color: #dc2626;
+  border-color: transparent;
+}
+
+@media (prefers-color-scheme: light) {
+  .term-detail-page__back:hover {
+    background-color: #f5f5f5;
+  }
+
+  .term-detail {
+    background-color: #f5f5f5;
+  }
+
+  .term-detail__group {
+    background-color: #e0e0e0;
+    color: #666;
+  }
+}
