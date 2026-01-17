@@ -68,76 +68,89 @@ public static class TermsEndpoints
         // CREATE New Terms
         group.MapPost("/", async (CreateTermsDto dto, AppDbContext db) =>
         {
-            var groupExist = await db.Groups.AnyAsync(g => g.Id == dto.GroupId);
-
-            if (!groupExist) return Results.NotFound(
-                new
-                {
-                    error = "GroupNotFound",
-                    message = $"Group with ID {dto.GroupId} does not exist.",
-                    ok = false
-                }
-            );
-            Term term = new()
+            try
             {
-                Name = dto.Name,
-                GroupId = dto.GroupId,
-                Description = dto.Description,
-                ReferenceLinks = dto.ReferenceLinks
-            };
-            db.Terms.Add(term);
-            await db.SaveChangesAsync();
-            var savedTerm = await db.Terms
-                               .Include(t => t.Group)
-                               .AsNoTracking()
-                               .FirstOrDefaultAsync(g => g.Id == term.Id);
-            TermsSummaryDto termDto = new(
-                savedTerm!.Id,
-                savedTerm.Name,
-                savedTerm.Group!.Name,
-                savedTerm.GroupId,
-                savedTerm.Description,
-                savedTerm.ReferenceLinks
-            );
-            return Results.CreatedAtRoute(GetTermsEndpoint, new { id = termDto.Id }, termDto);
+                Term term = new()
+                {
+                    Name = dto.Name,
+                    GroupId = dto.GroupId,
+                    Description = dto.Description,
+                    ReferenceLinks = dto.ReferenceLinks
+                };
+
+                db.Terms.Add(term);
+                await db.SaveChangesAsync();
+
+                var groupName = await db.Groups
+                    .Where(g => g.Id == dto.GroupId)
+                    .Select(g => g.Name)
+                    .AsNoTracking()
+                    .FirstAsync();
+
+                return Results.CreatedAtRoute(
+                    GetTermsEndpoint,
+                    new { id = term.Id },
+                    new TermsSummaryDto(
+                        term.Id,
+                        term.Name,
+                        groupName,
+                        term.GroupId,
+                        term.Description,
+                        term.ReferenceLinks
+                    )
+                );
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException!.Message.Contains("FOREIGN KEY constraint") == true)
+                {
+                    return Results.NotFound(new
+                    {
+                        error = "GroupNotFound",
+                        message = "Group does not exists",
+                        ok = false
+                    });
+                }
+                throw;
+            }
         });
 
         // PUT Endpoints
         // UPDATE Terms
         group.MapPut("/{id}", async (int id, CreateTermsDto dto, AppDbContext db) =>
         {
-            var groupExist = await db.Groups.AnyAsync(g => g.Id == dto.GroupId);
-
-            if (!groupExist) return Results.NotFound(
-                new
+            var termWithGroup = await db.Terms
+                // .Include(t => t.Group)
+                .Where(t => t.Id == id)
+                .Select(t => new
                 {
-                    error = "GroupNotFound",
-                    message = $"Group with ID {dto.GroupId} does not exist.",
-                    ok = false
-                }
-            );
+                    Term = t,
+                    GroupName = t.Group!.Name,
+                    GroupExists = db.Groups.Any(g => g.Id == dto.GroupId)
+                })
+                .FirstOrDefaultAsync();
 
-            var term = await db.Terms.FindAsync(id);
+            if (termWithGroup == null)
+                return Results.NotFound();
+            if (!termWithGroup.GroupExists)
+                return Results.BadRequest();
 
-            if (term is null) return Results.NotFound();
-
+            var term = termWithGroup.Term;
             term.Name = dto.Name;
             term.GroupId = dto.GroupId;
             term.Description = dto.Description;
             term.ReferenceLinks = dto.ReferenceLinks;
 
             await db.SaveChangesAsync();
-            var savedTerms = await db.Terms
-                               .Include(t => t.Group)
-                               .AsNoTracking()
-                               .FirstOrDefaultAsync(g => g.GroupId == term.GroupId);
+
             TermsDetailsDto newDto = new(
-                savedTerms!.Id,
-                savedTerms.Name,
-                savedTerms.Group!.Name,
-                savedTerms.Description,
-                savedTerms.ReferenceLinks
+                term.Id,
+                term.Name,
+                termWithGroup.GroupName,
+                term.Description,
+                term.ReferenceLinks
             );
+
             return Results.Ok(newDto);
         });
 
