@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { IoArrowBack } from 'react-icons/io5';
 import { termsService } from '../services/terms.service';
 import type { Term } from '../types';
 import './TermDetailPage.css';
@@ -35,22 +36,11 @@ export default function TermDetailPage() {
     navigate('/');
   };
 
-  const handleDelete = async () => {
-    if (!term || !confirm('Are you sure you want to delete this term?')) return;
-    
-    try {
-      await termsService.delete(term.id);
-      navigate('/');
-    } catch (err) {
-      console.error('Failed to delete term:', err);
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="term-detail-page">
         <button className="term-detail-page__back" onClick={handleBack}>
-          ← Back
+          <IoArrowBack /> Back
         </button>
         <p className="term-detail-page__status">Loading...</p>
       </div>
@@ -73,7 +63,7 @@ export default function TermDetailPage() {
   return (
     <div className="term-detail-page">
       <button className="term-detail-page__back" onClick={handleBack}>
-        ← Back
+        <IoArrowBack /> Back
       </button>
 
       <article className="term-detail">
@@ -102,15 +92,6 @@ export default function TermDetailPage() {
             </a>
           </section>
         )}
-
-        <footer className="term-detail__actions">
-          <button 
-            className="term-detail__delete-btn"
-            onClick={handleDelete}
-          >
-            Delete Term
-          </button>
-        </footer>
       </article>
     </div>
   );

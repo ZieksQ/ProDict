@@ -1,40 +1,46 @@
 .term-card {
-  background-color: var(--card-bg, #2a2a2a);
-  border-radius: 8px;
-  padding: 1rem 1.5rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.25rem;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .term-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+}
+
+.term-card__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
 }
 
 .term-card__name {
   margin: 0;
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .term-card__group {
   font-size: 0.85rem;
-  color: var(--text-muted, #888);
-  background-color: var(--badge-bg, #3a3a3a);
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-}
-
-@media (prefers-color-scheme: light) {
-  .term-card {
-    background-color: #f5f5f5;
-  }
-
-  .term-card__group {
-    background-color: #e0e0e0;
-    color: #666;
-  }
+  color: var(--text-secondary);
+  background-color: var(--badge-bg);
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
 }

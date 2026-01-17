@@ -18,8 +18,8 @@
 
 # Db for SQLite
 *.db
-*.db.shm
-*.db.wal
+*.db-shm
+*.db-wal
 
 # Mono auto generated files
 mono_crash.*
